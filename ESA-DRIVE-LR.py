@@ -16,9 +16,6 @@ epsilon = 0.01
 attack = True
 defense = False
 
-# -----------------------------
-# Defense Implementation 
-# -----------------------------
 def make_template(K):
     """Construct the distance-preserving template matrix A_T."""
     return (2.0 / K) * np.ones((K, K)) - np.eye(K)
@@ -40,9 +37,6 @@ def obfuscate_confidence_scores(preds_without_defense):
     U.scatter_(1, sort_idx, U_sorted)
     return U
 
-# -----------------------------
-# ESA attack implementation
-# -----------------------------
 
 @torch.no_grad()
 def esa_attack(model, x_act, yhat, num_active, reg=1e-4, eps=1e-3):
@@ -81,9 +75,7 @@ def esa_attack(model, x_act, yhat, num_active, reg=1e-4, eps=1e-3):
     # print("Reconstructed x_pas[0]:", x_hat[0].item())
     return x_hat
 
-# -----------------------------
-# Training and evaluation
-# -----------------------------
+
 def train_epoch(model, loader, optimizer, device):
     model.train()
     criterion = nn.CrossEntropyLoss()
@@ -183,9 +175,7 @@ def eval_model(model, loader, device, attack=attack, defense=defense):
     # return raw‐accuracy, defended‐accuracy (or None), and the mse
     return acc_no_def, mse
 
-# -----------------------------
-# Main script
-# -----------------------------
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='VFL Logistic Regression with ESA Attack')
