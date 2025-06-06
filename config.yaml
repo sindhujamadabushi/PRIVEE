@@ -1,0 +1,47 @@
+delta: 1e-5
+sensitivity: 0.1
+organization_num: 2
+
+MNIST:
+  batch_size: 128
+  epochs: 60
+  num_classes: 10
+  epochs_grna: 50
+  lr_grna: 0.1
+  epochs_gia: 500
+  lr_gia: 0.1
+  lr_vfl: 0.00005
+
+DRIVE:
+  batch_size: 128
+  epochs: 450
+  num_classes: 11
+  epochs_grna: 100
+  lr_vfl: 0.0001
+
+ADULT:
+  batch_size: 128
+  epochs: 100
+  num_classes: 2
+  epochs_grna: 100
+  lr_vfl: 0.0001
+
+CIFAR10:
+  batch_size: 128
+  num_classes: 10
+  epochs: 1
+  epochs_grna: 100
+  lr_vfl: 2.08534370927456e-04
+
+CIFAR100:
+  batch_size: 512
+  num_classes: 10
+  epochs: 1
+  epochs_grna: 100
+  lr_vfl: 0.01
+
+
+
+
+
+  
