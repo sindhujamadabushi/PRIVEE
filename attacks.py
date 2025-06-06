@@ -141,10 +141,6 @@ except ImportError:                             # legacy path
     def autocast_fp16():
         return _ac(dtype=torch.float16)
 
-
-# ─────────────────────────────────────────────────────────────────────────
-# 1.  Gradient-inversion attack (memory-tight version)
-# ─────────────────────────────────────────────────────────────────────────
 def gradient_inversion_attack_cifar(
     org_models,            # dict or list — active idx 0, passive idx 1
     top_model,
@@ -166,10 +162,7 @@ def gradient_inversion_attack_cifar(
     B      = x_act_cpu.shape[0]
     true_conf = true_conf.to(device)
 
-    # ---------------------------------------------------------------------
-    # Freeze all weights → no weight-grad storage
-    # ---------------------------------------------------------------------
-    if isinstance(org_models, dict):
+     if isinstance(org_models, dict):
         model_list = list(org_models.values())
     else:
         model_list = list(org_models)
@@ -179,9 +172,6 @@ def gradient_inversion_attack_cifar(
         for p in m.parameters():       # type: ignore[arg-type]
             p.requires_grad_(False)
 
-    # ---------------------------------------------------------------------
-    # Variable we reconstruct (passive images)
-    # ---------------------------------------------------------------------
     x_pas_hat = torch.zeros_like(x_act_cpu, device=device, requires_grad=True)
     opt       = torch.optim.Adam([x_pas_hat], lr=lr)
     mse       = nn.MSELoss()
@@ -189,8 +179,8 @@ def gradient_inversion_attack_cifar(
     for it in range(iters):
         opt.zero_grad()
 
-        with autocast_fp16():          # <<<<<<<<<<<<<<<<<<<<<<<<<<<
-            # 1) active-party activations (no grad)
+        with autocast_fp16():         
+            
             h_act_chunks = []
             for s in range(0, B, attack_batch_size):
                 e   = min(s + attack_batch_size, B)
@@ -199,28 +189,28 @@ def gradient_inversion_attack_cifar(
                     h_act_chunks.append(org_models[0](sub))
             h_act = torch.cat(h_act_chunks, dim=0)           # (B, d)
 
-            # 2) passive-party activations (grad flows to x_pas_hat)
+            
             h_pas_chunks = []
             for s in range(0, B, attack_batch_size):
                 e         = min(s + attack_batch_size, B)
-                sub_hat   = x_pas_hat[s:e]                   # still GPU
+                sub_hat   = x_pas_hat[s:e]                   
                 micro_out = []
                 for msub in sub_hat.split(micro):
                     micro_out.append(org_models[1](msub))
                 h_pas_chunks.append(torch.cat(micro_out, dim=0))
             h_pas = torch.cat(h_pas_chunks, dim=0)           # (B, d)
 
-            # 3) top model + softmax
+           
             h_joint = torch.cat((h_act, h_pas), dim=1)
             logits  = top_model(h_joint)
             pred    = torch.softmax(logits, dim=1)
 
-        # -----------------------------------------------------------------
+        
         loss = mse(pred, true_conf)
         loss.backward()
         opt.step()
 
-        # Clamp reconstructed image to [0,1]
+        
         with torch.no_grad():
             x_pas_hat.clamp_(0., 1.)
 
