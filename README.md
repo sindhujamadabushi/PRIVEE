@@ -88,4 +88,5 @@ All CLI flags:
 Select an attack with `--attack {gia,grna,lia,fia,none}`.
 
 ---
-
+Note : Dataset CSV files are not bundled with this repository because of GitHub’s size constraints.
+After you preprocess the raw data on your side, please create a datasets/ directory in the project root and place the resulting .csv files there before running the experiments.
