@@ -72,6 +72,7 @@ All CLI flags:
 | `--epsilon` | `float` | Privacy ε (when `--defense noising/privee/priveeplus`) | `0.1` |
 | `--attack_strength` | `float` | Strength parameter for the selected attack | `0.5` |
 | `--dataset` | `str` | Dataset name (e.g., `DRIVE`, `CIFAR10`) | `DRIVE` |
+| `--organization_num` | `int` | Number of passive parties | 2 |
 
 ---
 
@@ -86,6 +87,18 @@ All CLI flags:
 | PriVEE‑Plus  | `priveeplus` | `--epsilon E`  |
 
 Select an attack with `--attack {gia,grna,lia,fia,none}`.
+
+## Multi-party setting:
+
+```bash
+python multi_party_vfl.py \
+  --defense priveeplus \
+  --epsilon 0.1 \
+  --organization_num 10 \
+  --attack grna \
+  --attack_strength 0.4
+```
+organization_num can range from 2 up to 25. All other settings (defenses, ε values, attack types, etc.) remain identical to the 2-party case, including how attacks are run.
 
 ---
 Note : Dataset CSV files are not bundled with this repository because of GitHub’s size constraints.
