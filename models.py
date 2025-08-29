@@ -38,6 +38,35 @@ class LearningCoordinator(nn.Module):
         x = self.fc1(x)
         confidence_scores = F.softmax(x, dim=1)
         return confidence_scores
+
+class APModelkParties(nn.Module):
+    
+    def __init__(self, in_features_list, hidden_layer, out_features):
+        super().__init__()
+        self.models = nn.ModuleList([
+            APModel(in_features=in_f, hidden_layer=hidden_layer, out_features=out_features)
+            for in_f in in_features_list
+        ])
+
+    def forward(self, x_list):
+        return [m(x) for m, x in zip(self.models, x_list)]
+
+
+class LearningCoordinatorkParties(nn.Module):
+   
+    def __init__(self, out_features_per_party, num_classes, hidden=256):
+        super().__init__()
+        total = int(sum(out_features_per_party))
+        self.fc1 = nn.Linear(total, hidden)
+        self.fc2 = nn.Linear(hidden, num_classes)
+
+    def forward(self, *party_embs_list):
+        if len(party_embs_list) == 1 and isinstance(party_embs_list[0], (list, tuple)):
+            party_embs_list = party_embs_list[0]
+        h = torch.cat(party_embs_list, dim=1)
+        x = F.relu(self.fc1(h))
+        return self.fc2(x)
+
     
 #GIA, GRNA - CIFAR10, CIFAR100
 class BasicBlock(nn.Module):
