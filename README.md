@@ -118,5 +118,16 @@ python multi_party_vfl.py \
 organization_num can range from 2 up to 25. All other settings (defenses, ε values, attack types, etc.) remain identical to the 2-party case, including how attacks are run.
 
 ---
-Note : Dataset CSV files are not bundled with this repository because of GitHub’s size constraints.
-After you preprocess the raw data on your side, please create a datasets/ directory in the project root and place the resulting .csv files there before running the experiments.
+### Running Multiple Seeds with SLURM
+
+The provided SLURM script runs five experiments using seeds `1`–`5`.
+
+Before submitting, set the project path and experiment configuration:
+
+```bash
+PROJECT_DIR="/home/msindhuja/PRIVEE_NEW"
+
+DATASET="CIFAR100"
+ATTACK_STRENGTH="0.5"
+DEFENSE="fh-ope"
+RHO="0.1"
