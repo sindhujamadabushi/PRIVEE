@@ -5,43 +5,16 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Gaussian:
-    def __init__(self, epsilon, delta, sensitivity, random_state=None):
-            self.epsilon = epsilon
-            self.delta = delta
-            self.sensitivity = self._check_sensitivity(sensitivity)
-            self._scale = np.sqrt(2 * np.log(1.25 / self.delta)) * self.sensitivity / self.epsilon
+    def __init__(self, rho, random_state=None):
+            self.rho = rho
+
+            self._scale = 0.48448 / self.rho
         #   self._scale = 0.2 / self.epsilon
             self._rng = np.random.RandomState()
 
-    def _check_epsilon_delta(cls, epsilon, delta):
-            if epsilon == 0 or delta == 0:
-                raise ValueError("Neither Epsilon nor Delta can be zero")
-
-            if epsilon > 1.0:
-                raise ValueError("Epsilon cannot be greater than 1. If required, use GaussianAnalytic instead.")
-            return super()._check_epsilon_delta(epsilon, delta)
-
-    def _check_sensitivity(cls, sensitivity):
-            if not isinstance(sensitivity, float):
-                raise TypeError("Sensitivity must be numeric")
-            if sensitivity < 0:
-                raise ValueError("Sensitivity must be non-negative")
-            return float(sensitivity)
-
-    def _check_all(self):
-            self._check_sensitivity(self.sensitivity)
-            return True
-
-    def bias(self):
-            return 0.0
-
-    def variance(self):
-            self._check_all(0)
-            return self._scale ** 2
     
     def randomise(self, data, bound: float = 3.0) -> np.ndarray:
-        self._check_all()
-
+        
         if data.ndim == 1:
             num_classes = data.shape[0]
         else:
@@ -54,10 +27,10 @@ class Gaussian:
             for i in range(num_classes)
         ])
 
-        epsilon_parts = np.linspace(0.05, 0.1, num_classes + 1)[1:]
+        rho_parts = np.linspace(0.05, 0.1, num_classes + 1)[1:]
 
-        base = np.sqrt(2 * np.log(1.25 / self.delta)) * self.sensitivity
-        scales = base / epsilon_parts   # shape = (num_classes,s)
+        base = 0.48448
+        scales = base / rho_parts   # shape = (num_classes,s)
         
         std_scaling = noise * scales
 
@@ -67,23 +40,15 @@ class Gaussian:
         
         return noisy_data
   
-def add_Gaussian_noise_priveeplus(confidence_scores, epsilon, delta, sensitivity):
-    """
-    Vectorized implementation: sort each row, apply Apert, then scatter back.
-
-    Inputs:
-      - confidence_scores: torch.Tensor of shape (N, K)
-      - epsilon, delta, sensitivity: Gaussian mechanism parameters
-    Returns:
-      - torch.Tensor of shape (N, K) on the same device, dtype float32
-    """
+def add_Gaussian_noise_priveeplus(confidence_scores, rho):
+    
     # 1) Move to CPU and convert to NumPy
     conf_np = confidence_scores.detach().cpu().numpy()  # shape (N, K)
     N, K = conf_np.shape
 
     # 2) Build A and Apert
     A = (-2.0 / K) * np.ones((K, K)) + np.eye(K)
-    mechanism = Gaussian(epsilon=epsilon, delta=delta, sensitivity=sensitivity)
+    mechanism = Gaussian(rho=rho)
     Apert = mechanism.randomise(A)  # shape (K, K)
 
     # 3) Compute sort indices and sorted values (axis=1 sorts each row)
