@@ -49,9 +49,7 @@ For example, to create the ADULT Income dataset:
 python3 create_dataset.py \
     --dataset ADULT \
     --output-root .
-
-
-
+```
 
 
 ### Vanilla VFL baseline (MNIST, 2 parties)
