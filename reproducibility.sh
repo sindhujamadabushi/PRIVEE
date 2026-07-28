@@ -2,13 +2,11 @@
 #SBATCH --array=1-5
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=01:00:00
+#SBATCH --time=
 #SBATCH --output=slurm_logs/%x_%A_%a.out
 #SBATCH --error=slurm_logs/%x_%A_%a.err
-#SBATCH --partition=t4_normal_q
-#SBATCH --account=sindhuja
+#SBATCH --partition=
 
-# set -euo pipefail
 
 
 PROJECT_DIR=""
