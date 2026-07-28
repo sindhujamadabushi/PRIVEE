@@ -9,7 +9,7 @@ from torch_generate_noise2 import add_Gaussian_noise_priveeplus
 ope = FH_OPE() 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def apply_defense_before(defense, confidence_scores, labels, decimals, epsilon,delta, sensitivity):
+def apply_defense_before(defense, confidence_scores, labels, decimals, rho, epsilon, delta, sensitivity):
     epoch_correct_defense = 0
     if defense == 'rounding':
         rounded_scores  = round_confidences(confidence_scores.detach(), decimals)
@@ -28,18 +28,18 @@ def apply_defense_before(defense, confidence_scores, labels, decimals, epsilon,d
         epoch_correct_defense += (pred_defense == labels).sum().item()
 
     if defense == 'privee':
-        enc_scores = add_Gaussian_noise_privee(confidence_scores.detach(), epsilon, delta, sensitivity)
+        enc_scores = add_Gaussian_noise_privee(confidence_scores.detach(), rho)
         pred_defense = torch.argmax(enc_scores, dim=1)
         epoch_correct_defense += (pred_defense == labels).sum().item()
 
     if defense == 'priveeplus':
-        enc_scores = add_Gaussian_noise_priveeplus(confidence_scores.detach(), epsilon, delta, sensitivity)
+        enc_scores = add_Gaussian_noise_priveeplus(confidence_scores.detach(), rho)
         pred_defense = torch.argmax(enc_scores, dim=1)
         epoch_correct_defense += (pred_defense == labels).sum().item()
     
     return epoch_correct_defense
 
-def apply_defense_after(defense, conf_scores_tensor, num_classes, decimals, epsilon,delta, sensitivity):
+def apply_defense_after(defense, conf_scores_tensor, num_classes, decimals, rho, epsilon, delta, sensitivity):
     if defense == 'rounding':
         defended_conf = round_confidences(conf_scores_tensor.detach(), decimals)
     elif defense == 'noising':
@@ -50,13 +50,13 @@ def apply_defense_after(defense, conf_scores_tensor, num_classes, decimals, epsi
     elif defense == 'privee':
         defended_conf = add_Gaussian_noise_privee(
             conf_scores_tensor.detach(),
-            epsilon, delta, sensitivity
+            rho
         )
 
     elif defense == 'priveeplus':
         defended_conf = add_Gaussian_noise_priveeplus(
             conf_scores_tensor.detach(),
-            epsilon, delta, sensitivity
+            rho
         )
     elif defense == 'fh-ope':
         enc_conf = encrypt_confidence_batch(conf_scores_tensor.detach(), ope, device='cpu')
@@ -69,9 +69,9 @@ def apply_defense_after(defense, conf_scores_tensor, num_classes, decimals, epsi
     return defended_conf
 
 
-def apply_defense_after_cifar(defense, stored_batch_idxs, epsilon, delta, sensitivity, x_act_all_cpu, conf_scores_tensor, decimals, num_classes):
+def apply_defense_after_cifar(defense, stored_batch_idxs, rho, x_act_all_cpu, conf_scores_tensor, decimals, num_classes, epsilon, delta, sensitivity):
     if defense == 'priveeplus':
-        defended_scores = add_Gaussian_noise_priveeplus(conf_batch_gpu, epsilon, delta, sensitivity)
+        defended_scores = add_Gaussian_noise_priveeplus(conf_batch_gpu, rho)
         for batch_idxs in stored_batch_idxs:
             idxs = torch.tensor(batch_idxs, dtype=torch.long)
 
@@ -108,7 +108,7 @@ def apply_defense_after_cifar(defense, stored_batch_idxs, epsilon, delta, sensit
     if defense == 'privee':
         defended_scores_full = add_Gaussian_noise_privee(
             conf_scores_tensor,
-            epsilon, delta, sensitivity
+            rho
         )
 
 
