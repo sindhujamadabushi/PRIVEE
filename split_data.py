@@ -9,8 +9,10 @@ from torchvision import transforms
 
 
 def vfl_split_data(dname, attack_str, organization_num, batch_size):
+
     
-    file_path = f"/home/msindhuja/PRIVEE/datasets/{dname}/{dname}.csv"
+    
+    file_path = f"datasets/{dname}/{dname}.csv"
     X = pd.read_csv(file_path)
     
     if dname == 'ADULT':
@@ -210,7 +212,7 @@ def vfl_split_data(dname, attack_str, organization_num, batch_size):
         test_loader_list.append(DataLoader(y_test, batch_size=batch_size))
     
     
-    if dname == 'CIFAR10':
+    if dname in ("CIFAR10", "CIFAR100"):
         return X_train_vertical_FL, train_loader_list, y_train
     else:
         return X_train_vertical_FL, train_loader_list
