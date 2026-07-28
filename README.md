@@ -7,10 +7,10 @@
 
 | Category       | Highlights                                                           |
 | -------------- | -------------------------------------------------------------------- |
-| **Datasets**   | MNIST, Fashion‑MNIST, CIFAR‑10/100, Credit‑Card, Adult, custom CSV   |
+| **Datasets**   | MNIST, CIFAR‑10/100, Credit‑Card, Adult, custom CSV   |
 | **Models**     | `BottomModel` per organisation, `LearningCoordinator*` top networks  |
 | **Attacks**    | GIA, GRNA, ESA, active/passive label & feature inference                  |
-| **Defenses**   | Rounding, raw Gaussian noise, FH‑OPE, PRIVEE, PRIVEE++            |
+| **Defenses**   | Rounding, Differential Privacy, FH‑OPE, PRIVEE, PRIVEE++            |
 
 ---
 
@@ -34,6 +34,25 @@ pip install -r requirements_PERFACY.txt
 ---
 
 ## Running Experiments
+
+### Dataset Loading
+
+Before running the experiments, create the required dataset CSV files using `create_dataset.py`. The script supports `MNIST`, `CIFAR10`, `CIFAR100`, `ADULT`, and `DRIVE`.
+
+Run the following commands from the project root directory.
+
+#### Create a Single Dataset
+
+For example, to create the ADULT Income dataset:
+
+```bash
+python3 create_dataset.py \
+    --dataset ADULT \
+    --output-root .
+
+
+
+
 
 ### Vanilla VFL baseline (MNIST, 2 parties)
 
