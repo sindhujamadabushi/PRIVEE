@@ -122,7 +122,7 @@ def grna_cifar(X_train_vertical_FL, x_ap_all, conf_scores_tensor,
 
             epoch_loss += loss.item()                               # scalar
             del apout, ppout, joint, logits, gen, true, loss
-            torch.cuda.empty_cache()                                # release
+            # torch.cuda.empty_cache()                                # release
 
         print(f"[GRNA] epoch {epoch+1}/{epochs_grna}  "
               f"avg-MSE {epoch_loss/len(batch_idxs_list):.6f}")
@@ -132,14 +132,14 @@ def grna_cifar(X_train_vertical_FL, x_ap_all, conf_scores_tensor,
 
 from contextlib import contextmanager
 
-try:                                            # PyTorch ≥ 1.13
-    from torch.amp import autocast as _ac
-    def autocast_fp16():                        # usage:  with autocast_fp16():
-        return _ac("cuda", dtype=torch.float16)
-except ImportError:                             # legacy path
-    from torch.cuda.amp import autocast as _ac
-    def autocast_fp16():
-        return _ac(dtype=torch.float16)
+# try:                                            # PyTorch ≥ 1.13
+#     from torch.amp import autocast as _ac
+#     def autocast_fp16():                        # usage:  with autocast_fp16():
+#         return _ac("cuda", dtype=torch.float16)
+# except ImportError:                             # legacy path
+#     from torch.cuda.amp import autocast as _ac
+#     def autocast_fp16():
+#         return _ac(dtype=torch.float16)
 
 def gradient_inversion_attack_cifar(
     org_models,            # dict or list — active idx 0, passive idx 1
@@ -162,7 +162,7 @@ def gradient_inversion_attack_cifar(
     B      = x_act_cpu.shape[0]
     true_conf = true_conf.to(device)
 
-     if isinstance(org_models, dict):
+    if isinstance(org_models, dict):
         model_list = list(org_models.values())
     else:
         model_list = list(org_models)
@@ -216,7 +216,7 @@ def gradient_inversion_attack_cifar(
 
         if it % 100 == 0 or it == iters - 1:
             print(f"[Iter {it+1:4d}/{iters}]  MSE loss: {loss.item():.6f}")
-
-        torch.cuda.empty_cache()
+# 
+        # torch.cuda.empty_cache()
 
     return loss
