@@ -251,7 +251,7 @@ def grna_k(
 
 
 
-file_path = "/home/msindhuja/PRIVEE-VFL/PFI-VFL/datasets/MNIST/MNIST.csv"
+file_path = "datasets/MNIST/MNIST.csv"
 X = pd.read_csv(file_path)
 y = X['class']
 X = X.drop(['class'], axis=1)
