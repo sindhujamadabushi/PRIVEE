@@ -125,7 +125,7 @@ The provided SLURM script runs five experiments using seeds `1`–`5`.
 Before submitting, set the project path and experiment configuration:
 
 ```bash
-PROJECT_DIR="/home/msindhuja/PRIVEE_NEW"
+PROJECT_DIR="/main/project/folder/path/PRIVEE"
 
 DATASET="CIFAR100"
 ATTACK_STRENGTH="0.5"
