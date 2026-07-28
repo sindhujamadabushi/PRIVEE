@@ -120,7 +120,7 @@ organization_num can range from 2 up to 25. All other settings (defenses, ε val
 ---
 ### Running Multiple Seeds with SLURM
 
-The provided SLURM script runs five experiments using seeds `1`–`5`.
+The provided SLURM script (reproducibility.sh) runs five experiments using seeds `1`–`5`.
 
 Before submitting, set the project path and experiment configuration:
 
